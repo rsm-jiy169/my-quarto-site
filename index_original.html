@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Why Every Analyst Should Build a Quarto Portfolio</title>
+  <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #1e293b;
+      --panel: rgba(15, 23, 42, 0.62);
+      --panel-2: rgba(30, 41, 59, 0.72);
+      --line: rgba(255, 255, 255, 0.12);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent2: #a78bfa;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.20), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(167, 139, 250, 0.18), transparent 24%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow: hidden;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 64px 72px 88px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      transform: translateX(60px) scale(0.98);
+      transition: opacity 420ms ease, transform 420ms ease;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #dbeafe;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      width: fit-content;
+      margin-bottom: 18px;
+    }
+
+    h1, h2 {
+      margin: 0;
+      color: white;
+      letter-spacing: -0.03em;
+      line-height: 0.96;
+    }
+
+    h1 { font-size: clamp(46px, 6vw, 82px); max-width: 900px; }
+    h2 { font-size: clamp(34px, 4vw, 58px); }
+
+    .subtitle {
+      margin-top: 18px;
+      font-size: clamp(20px, 2vw, 28px);
+      color: #cbd5e1;
+      max-width: 840px;
+      line-height: 1.35;
+    }
+
+    .hero-card {
+      margin-top: 28px;
+      max-width: 880px;
+      padding: 28px 30px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .bullet-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 18px;
+      margin-top: 18px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .bullet-list li {
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      font-size: 20px;
+    }
+
+    .grid3 {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      padding: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      min-height: 270px;
+    }
+
+    .card .num {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 20px;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      font-size: 28px;
+      color: white;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.45;
+      color: #d7e1ee;
+    }
+
+    .note {
+      margin-top: 22px;
+      max-width: 980px;
+      padding: 18px 20px;
+      background: rgba(56, 189, 248, 0.10);
+      border: 1px solid rgba(56, 189, 248, 0.20);
+      border-left: 6px solid var(--accent);
+      border-radius: 18px;
+      font-size: 22px;
+      line-height: 1.4;
+    }
+
+    .plan {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .timeline {
+      padding: 22px 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 18px;
+      align-items: start;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .step:last-child { border-bottom: none; }
+
+    .week {
+      font-weight: 700;
+      color: #e0f2fe;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .step p {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.45;
+      color: #d6deea;
+    }
+
+    .side-panel {
+      padding: 24px;
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.10), rgba(167, 139, 250, 0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .side-panel h3 {
+      margin: 0 0 14px;
+      font-size: 28px;
+      color: white;
+    }
+
+    .side-panel ul {
+      margin: 0;
+      padding-left: 22px;
+      font-size: 21px;
+      line-height: 1.65;
+      color: #dbe7f3;
+    }
+
+    .takeaway {
+      margin-top: 18px;
+      font-size: 21px;
+      color: var(--muted);
+      max-width: 1000px;
+    }
+
+    .chrome {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 22px 28px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      z-index: 5;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 33.333%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 320ms ease;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 15px;
+      white-space: nowrap;
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.24);
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .dot.active {
+      background: white;
+      transform: scale(1.2);
+    }
+
+    .nav-hint {
+      position: absolute;
+      right: 28px;
+      top: 24px;
+      font-size: 14px;
+      color: var(--muted);
+      z-index: 5;
+      letter-spacing: 0.02em;
+    }
+
+    @media (max-width: 980px) {
+      .slide { padding: 44px 26px 92px; justify-content: flex-start; }
+      .grid3, .plan { grid-template-columns: 1fr; }
+      .bullet-list { grid-template-columns: 1fr; }
+      .step { grid-template-columns: 1fr; gap: 8px; }
+      .nav-hint { display: none; }
+      body { overflow: auto; }
+      .deck { height: auto; min-height: 100vh; }
+      .slide { position: relative; inset: auto; opacity: 1; transform: none; display: none; min-height: 100vh; }
+      .slide.active { display: flex; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck" aria-label="3-slide presentation">
+    <div class="nav-hint">Use ← → or space to navigate</div>
+
+    <section class="slide active" data-title="Title">
+      <div class="eyebrow">Quarto · Portfolio · Communication</div>
+      <h1>Why Every Analyst Should Build a Quarto Portfolio</h1>
+      <div class="subtitle">
+        A strong portfolio site does more than list tools. It demonstrates how you ask questions, structure analysis, and communicate results.
+      </div>
+      <div class="hero-card">
+        <div style="font-size:24px; line-height:1.45; color:#eef6ff;">A Quarto site can combine your <strong>projects</strong>, <strong>blog posts</strong>, <strong>resume</strong>, and <strong>GitHub-friendly workflow</strong> in one professional place.</div>
+        <ul class="bullet-list">
+          <li>Polished writing</li>
+          <li>Reproducible analysis</li>
+          <li>Clean publishing workflow</li>
+          <li>Better employer signal</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Why Quarto">
+      <div class="eyebrow">Slide 2</div>
+      <h2>Why Quarto is a smart choice</h2>
+      <div class="grid3">
+        <article class="card">
+          <div class="num">1</div>
+          <h3>Reproducible</h3>
+          <p>Code, narrative, tables, and figures live together. That makes your work easier to trust, update, and reuse.</p>
+        </article>
+        <article class="card">
+          <div class="num">2</div>
+          <h3>Professional</h3>
+          <p>A website feels more curated than scattered notebooks or screenshots. Employers see judgment, not just output.</p>
+        </article>
+        <article class="card">
+          <div class="num">3</div>
+          <h3>Scalable</h3>
+          <p>You can start with one page today, then add a blog, project archive, resume page, and custom styling over time.</p>
+        </article>
+      </div>
+      <div class="note"><strong>Key idea:</strong> a Quarto portfolio showcases <em>technical skill + communication skill + design sense</em> in a single artifact.</div>
+    </section>
+
+    <section class="slide" data-title="30-Day Plan">
+      <div class="eyebrow">Slide 3</div>
+      <h2>My 30-day portfolio plan</h2>
+      <div class="plan">
+        <div class="timeline">
+          <div class="step"><div class="week">Week 1</div><p>Create a homepage, about page, and contact links with a clean visual theme.</p></div>
+          <div class="step"><div class="week">Week 2</div><p>Publish one analytic project with a clear question, method, result, and takeaway.</p></div>
+          <div class="step"><div class="week">Week 3</div><p>Add one short blog post that translates analysis for a non-technical audience.</p></div>
+          <div class="step"><div class="week">Week 4</div><p>Refine navigation, add a resume link, and share the site publicly through GitHub Pages.</p></div>
+        </div>
+        <aside class="side-panel">
+          <h3>What employers can infer</h3>
+          <ul>
+            <li>You can organize work clearly</li>
+            <li>You can write for real readers</li>
+            <li>You can maintain a technical workflow</li>
+            <li>You care about presentation quality</li>
+          </ul>
+        </aside>
+      </div>
+      <div class="takeaway"><strong>Takeaway:</strong> a small but thoughtful Quarto portfolio is often more persuasive than a long PDF resume.</div>
+    </section>
+
+    <div class="chrome">
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="meta">
+        <div id="slideCounter">1 / 3</div>
+        <div class="dots" aria-hidden="true">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const dots = Array.from(document.querySelectorAll('.dot'));
+      const counter = document.getElementById('slideCounter');
+      const progressBar = document.getElementById('progressBar');
+      let index = 0;
+
+      function show(i) {
+        index = (i + slides.length) % slides.length;
+        slides.forEach((slide, idx) => slide.classList.toggle('active', idx === index));
+        dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
+        counter.textContent = `${index + 1} / ${slides.length}`;
+        progressBar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) {
+          e.preventDefault();
+          show(index + 1);
+        } else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) {
+          e.preventDefault();
+          show(index - 1);
+        }
+      });
+
+      window.addEventListener('click', (e) => {
+        const width = window.innerWidth;
+        if (e.clientX > width * 0.65) show(index + 1);
+        else if (e.clientX < width * 0.35) show(index - 1);
+      });
+
+      show(0);
+    })();
+  </script>
+</body>
+</html>
